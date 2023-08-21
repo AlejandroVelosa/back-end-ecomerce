@@ -1,5 +1,7 @@
 const catchError = require("../utils/catchError");
 const Cart = require("../models/Cart");
+const Product = require("../models/Product");
+const Category = require("../models/Category");
 
 const getAll = catchError(async (req, res) => {
   const userId = req.user.id;
