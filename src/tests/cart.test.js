@@ -1,0 +1,65 @@
+const request = require("supertest");
+const app = require("../app");
+const Product = require("../models/Product");
+require("../models");
+
+const URL_BASE_USER = "/api/v1/users";
+const URL_CART = "/api/v1/cart";
+
+let TOKEN;
+let productBody;
+let product;
+let userId;
+
+beforeAll(async () => {
+  const user = {
+    email: "alejovelosa@gmail.com",
+    password: "alejito",
+  };
+
+  const res = await request(app).post(`${URL_BASE_USER}/login`).send(user);
+
+  TOKEN = res.body.token;
+
+  userId = res.body.user.id;
+
+  productBody = {
+    title: "productTest",
+    description: "lorem20",
+    price: 23,
+  };
+
+  product = await Product.create(productBody);
+});
+
+test("POST -> 'URL_CART' shoul return status code 201  and res.body. quantity === body.quantity", async () => {
+  const bodyCart = {
+    quantity: 1,
+    productId: product.id,
+  };
+
+  const res = await request(app)
+    .post(URL_CART)
+    .send(bodyCart)
+    .set("Authorization", `Bearer ${TOKEN}`);
+
+  expect(res.statusCode).toBe(201);
+  expect(res.body).toBeDefined();
+  expect(res.body.quantity).toBe(bodyCart.quantity);
+  expect(res.body.id).toBe(userId);
+});
+
+test("GET -> 'URL_CART', should return status code 200 res.body.length ====1", async () => {
+  const res = await request(app)
+    .get(URL_CART)
+    .set("Authorization", `Bearer ${TOKEN}`);
+
+  expect(res.status).toBe(200);
+  expect(res.body).toBeDefined();
+  expect(res.body).toHaveLength(1);
+  expect(res.body[0].userId).toBe(userId);
+  expect(res.body[0].product).toBeDefined();
+  expect(res.body[0].productId).toBe(product.id);
+
+  await product.destroy();
+});

@@ -53,6 +53,19 @@ test("GET ALL -> 'URL_PRODUCT ' should return status code 200 and res.body to be
   expect(res.statusCode).toBe(200);
   expect(res.body).toBeDefined();
   expect(res.body).toHaveLength(1);
+  expect(res.body[0].category).toBeDefined();
+  expect(res.body[0].category.id).toBe(category.id);
+});
+
+test("GET ALL -> 'URL_PRODUCT?category=id ' should return status code 200 and res.body to be defined  res.body.length === 1, to be defined  and res.body[0].category.id", async () => {
+  // /api/v1/products?category=1
+  const res = await request(app).get(`${URL_PRODUCT}?category=${category.id}`);
+
+  expect(res.statusCode).toBe(200);
+  expect(res.body).toBeDefined();
+  expect(res.body).toHaveLength(1);
+  expect(res.body[0].category).toBeDefined();
+  expect(res.body[0].category.id).toBe(category.id);
 });
 
 test("GET ONE -> 'URL_PRODUCT/:id ' should return status code 200 and res.body to be defined  res.body.title === product.title ", async () => {
