@@ -79,8 +79,6 @@ test("PUT -> 'URL_CART', should return status code 200 res.body.quantity === bod
   expect(res.status).toBe(200);
   expect(res.body).toBeDefined();
   expect(res.body.quantity).toBe(bodyUpdate.quantity);
-
-  await product.destroy();
 });
 
 test("DELITE -> 'URL_CART', should return status code 204 ", async () => {
