@@ -1,6 +1,7 @@
 const request = require("supertest");
 const app = require("../app");
 const Category = require("../models/Category");
+const ProductImg = require("../models/ProductImg");
 require("../models");
 
 const URL_PRODUCT = "/api/v1/products";
@@ -9,6 +10,7 @@ let TOKEN;
 let product;
 let category;
 let productId;
+let image;
 
 beforeAll(async () => {
   const user = {
@@ -90,6 +92,24 @@ test("PUT -> 'URL_PRODUCT/:id ' should return status code 200 and res.body.title
   expect(res.body.title).toBe(productUpdate.title);
 });
 
+test("POST 'URL_PRODUCT/:id/images'  should return status code 200 and res.body.lenght === 1 ", async () => {
+  const imageBody = {
+    url: "lorem",
+    filename: "lorem",
+  };
+
+  image = await ProductImg.create(imageBody);
+
+  const res = await request(app)
+    .post(`${URL_PRODUCT}/${productId}/images`)
+    .send([image.id])
+    .set("Authorization", `Bearer ${TOKEN}`);
+
+  expect(res.status).toBe(200);
+  expect(res.body).toBeDefined();
+  expect(res.body).toHaveLength(1);
+});
+
 test("DELETE -> 'URL_PRODUCT/:id ' should return status code 204 ", async () => {
   const res = await request(app)
     .delete(`${URL_PRODUCT}/${productId}`)
@@ -98,4 +118,5 @@ test("DELETE -> 'URL_PRODUCT/:id ' should return status code 204 ", async () => 
   expect(res.statusCode).toBe(204);
 
   await category.destroy();
+  await image.destroy();
 });
