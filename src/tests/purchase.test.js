@@ -67,6 +67,8 @@ test("GET -> 'URL_PURCHASE' should return status code 200 and res.body.lenght ==
   expect(res.body[0].userId).toBe(userId);
   expect(res.body[0].product).toBeDefined();
   expect(res.body[0].product.id).toBe(product.id);
+  expect(res.body[0].product.productImgs).toBeDefined();
+  expect(res.body[0].product.productImgs).toHaveLength(0);
 
   await product.destroy();
 });
